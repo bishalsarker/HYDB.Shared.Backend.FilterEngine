@@ -10,11 +10,7 @@ namespace HYDB.FilterEngine
 
         public static Type GetDataType(string value)
         {
-            if (IsInt(value))
-            {
-                return typeof(int);
-            }
-            else if (IsDouble(value))
+            if (IsDouble(value))
             {
                 return typeof(double);
             }
@@ -28,7 +24,7 @@ namespace HYDB.FilterEngine
             }
         }
 
-        private static bool IsInt(string value)
+        public static bool IsInt(string value)
         {
             int number;
             if (int.TryParse(value, out number))
@@ -41,7 +37,7 @@ namespace HYDB.FilterEngine
             }
         }
 
-        private static bool IsDouble(string value)
+        public static bool IsDouble(string value)
         {
             double number;
             if (double.TryParse(value, out number))

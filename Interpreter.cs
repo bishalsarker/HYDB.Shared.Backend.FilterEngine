@@ -73,12 +73,26 @@ namespace HYDB.FilterEngine
             }
             else
             {
-                ConstantExpression left = Expression.Constant(leftVar.Value, leftVar.Type);
-                ConstantExpression right = Expression.Constant(rightVar.Value, rightVar.Type);
+                ConstantExpression left = Expression.Constant(ResolveZeroIfDouble(leftVar.Value, leftVar.Type), leftVar.Type);
+                ConstantExpression right = Expression.Constant(ResolveZeroIfDouble(rightVar.Value, rightVar.Type), rightVar.Type);
                 BinaryExpression body = GetConditionalOperator(condition.Operator, left, right);
                 return Expression.Lambda<Func<bool>>(body).Compile();
             }
             
+        }
+
+        private static object ResolveZeroIfDouble(dynamic val, Type type)
+        {
+            object newObj;
+            if (type == typeof(double) && val.GetType() == typeof(int)) {
+                newObj = (double)val;
+            }
+            else
+            {
+                newObj = val;
+            }
+
+            return newObj;
         }
 
         private static BinaryExpression GetConditionalOperator(string operatr, ConstantExpression left, ConstantExpression right)
@@ -93,19 +107,19 @@ namespace HYDB.FilterEngine
             }
             else if(operatr.Equals(">"))
             {
-                return Expression.GreaterThan(SetTypeInt(left), right);
+                return Expression.GreaterThan(SetTypeDouble(left), right);
             }
             else if (operatr.Equals("<"))
             {
-                return Expression.LessThan(SetTypeInt(left), right);
+                return Expression.LessThan(SetTypeDouble(left), right);
             }
             else if (operatr.Equals("<="))
             {
-                return Expression.LessThanOrEqual(SetTypeInt(left), right);
+                return Expression.LessThanOrEqual(SetTypeDouble(left), right);
             }
             else if(operatr.Equals(">="))
             {
-                return Expression.GreaterThanOrEqual(SetTypeInt(left), right);
+                return Expression.GreaterThanOrEqual(SetTypeDouble(left), right);
             }
             else
             {
@@ -113,9 +127,9 @@ namespace HYDB.FilterEngine
             }
         }
 
-        private static Expression SetTypeInt(Expression exp)
+        private static Expression SetTypeDouble(Expression exp)
         {
-            return Expression.Convert(exp, typeof(int));
+            return Expression.Convert(exp, typeof(double));
         }
 
         private static Expression SetType(Expression left, Type type)
